@@ -149,4 +149,3 @@ Preprocess a dataset:
 ```bash
 python process_dataset.py --dataname adult
 ```
->>>>>>> 558e96d (initial commit)
