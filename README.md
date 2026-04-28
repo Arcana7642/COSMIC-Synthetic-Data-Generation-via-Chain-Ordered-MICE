@@ -20,6 +20,18 @@ Supported methods:
 - `tabsyn`
 - `vae`
 
+## Workflow
+
+Use the commands in this order:
+
+1. `download_dataset.py` downloads the raw dataset into `data/[NAME]`.
+2. `process_dataset.py` converts the raw files into the processed NumPy/CSV layout expected by the baselines.
+3. `--mode train` fits the selected method and writes model artifacts under `ckpt/[NAME]/[METHOD]` or the method-specific checkpoint directory.
+4. `--mode sample` loads the trained artifacts and writes synthetic data under `synthetic/[NAME]/[METHOD].csv`, unless `--save_path` is provided.
+
+`smote` does not train a neural checkpoint; its `train`/`sample` path directly produces synthetic data from the processed training split.
+`vae` is the TabSyn pretraining step and supports `train` only; run `tabsyn --mode sample` to generate data after the VAE and TabSyn model are trained.
+
 ## COSMIC
 
 `COSMIC` is scoped as a three-stage method:
