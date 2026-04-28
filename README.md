@@ -161,19 +161,12 @@ python main.py --dataname adult --method cosmic --mode train
 python main.py --dataname adult --method cosmic --mode sample
 ```
 
-CTGAN / TVAE:
-
-```bash
-python main.py --dataname adult --method ctgan --mode train --epochs 300
-python main.py --dataname adult --method ctgan --mode sample
-python main.py --dataname adult --method tvae --mode train --epochs 300
-python main.py --dataname adult --method tvae --mode sample
-```
-
-Other baselines:
+Train all baselines:
 
 ```bash
 python main.py --dataname adult --method smote --mode train
+python main.py --dataname adult --method ctgan --mode train --epochs 300
+python main.py --dataname adult --method tvae --mode train --epochs 300
 python main.py --dataname adult --method stasy --mode train
 python main.py --dataname adult --method codi --mode train
 python main.py --dataname adult --method tabddpm --mode train
@@ -181,8 +174,12 @@ python main.py --dataname adult --method vae --mode train
 python main.py --dataname adult --method tabsyn --mode train
 ```
 
+Sample all baselines with generation support:
+
 ```bash
 python main.py --dataname adult --method smote --mode sample
+python main.py --dataname adult --method ctgan --mode sample
+python main.py --dataname adult --method tvae --mode sample
 python main.py --dataname adult --method stasy --mode sample
 python main.py --dataname adult --method codi --mode sample
 python main.py --dataname adult --method tabddpm --mode sample --ddim --steps 50
