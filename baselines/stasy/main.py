@@ -46,7 +46,7 @@ def main(args):
     config.data.image_size = train_z.shape[1]
     print(config.data.image_size)
     # Initialize model.
-    config.device = torch.device(f'cuda:{args.gpu}')
+    config.device = torch.device(args.device)
     score_model = mutils.create_model(config)
     print(score_model)
     num_params = sum(p.numel() for p in score_model.parameters())

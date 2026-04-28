@@ -22,7 +22,9 @@ def execute_function(method: str, mode: str):
     if method == "cosmic":
         module_name = "COSMIC"
     elif method == "vae":
-        module_name = "baselines.tabsyn.vae"
+        if mode != "train":
+            raise ValueError("VAE pretraining only supports train mode")
+        module_name = "baselines.tabsyn.vae.main"
     elif method == "tabsyn":
         module_name = f"baselines.tabsyn.main" if mode == "train" else f"baselines.tabsyn.sample"
     elif method == "tabddpm":
@@ -56,7 +58,7 @@ def get_args():
         required=True,
         help="Baseline or model name",
     )
-    parser.add_argument("--gpu", type=int, default=0, help="GPU index for reference methods")
+    parser.add_argument("--gpu", type=int, default=0, help="GPU index for baseline methods")
     parser.add_argument("--save_path", type=str, default=None, help="Output path for sampled CSV")
 
     parser.add_argument("--epochs", type=int, default=300, help="Epochs for CTGAN/TVAE")
@@ -94,6 +96,31 @@ def get_args():
     parser.add_argument("--ddim", action="store_true", default=False, help="Use DDIM for TabDDPM")
     parser.add_argument("--steps", type=int, default=50, help="Sampling steps for diffusion methods")
     parser.add_argument("--cat_encoding", type=str, default="one-hot", help="Categorical encoding for SMOTE")
+
+    parser.add_argument("--max_beta", type=float, default=1e-2, help="Initial beta for TabSyn VAE pretraining")
+    parser.add_argument("--min_beta", type=float, default=1e-5, help="Minimum beta for TabSyn VAE pretraining")
+    parser.add_argument("--lambd", type=float, default=0.7, help="Beta decay factor for TabSyn VAE pretraining")
+
+    parser.add_argument("--training_batch_size", type=int, default=4096, help="Training batch size for CoDi")
+    parser.add_argument("--eval_batch_size", type=int, default=4096, help="Evaluation batch size for CoDi")
+    parser.add_argument("--total_epochs_both", type=int, default=4000, help="Joint training epochs for CoDi")
+    parser.add_argument("--sample_step", type=int, default=1000, help="Checkpoint interval in CoDi epochs")
+    parser.add_argument("--lr_con", type=float, default=2e-4, help="Continuous diffusion learning rate for CoDi")
+    parser.add_argument("--lr_dis", type=float, default=2e-4, help="Discrete diffusion learning rate for CoDi")
+    parser.add_argument("--lambda_con", type=float, default=0.2, help="Continuous contrastive loss weight for CoDi")
+    parser.add_argument("--lambda_dis", type=float, default=0.2, help="Discrete contrastive loss weight for CoDi")
+    parser.add_argument("--grad_clip", type=float, default=1.0, help="Gradient clipping value for CoDi")
+    parser.add_argument("--T", type=int, default=1000, help="Diffusion timesteps for CoDi")
+    parser.add_argument("--beta_1", type=float, default=1e-4, help="Initial diffusion beta for CoDi")
+    parser.add_argument("--beta_T", type=float, default=0.02, help="Final diffusion beta for CoDi")
+    parser.add_argument("--mean_type", type=str, default="epsilon", choices=("epsilon",), help="Continuous sampler mean type for CoDi")
+    parser.add_argument("--var_type", type=str, default="fixedlarge", choices=("fixedlarge", "fixedsmall"), help="Continuous sampler variance type for CoDi")
+    parser.add_argument("--encoder_dim_con", type=str, default="512,1024,1024,512", help="Continuous CoDi encoder dimensions")
+    parser.add_argument("--encoder_dim_dis", type=str, default="512,1024,1024,512", help="Discrete CoDi encoder dimensions")
+    parser.add_argument("--nf_con", type=int, default=128, help="Continuous CoDi time embedding dimension")
+    parser.add_argument("--nf_dis", type=int, default=128, help="Discrete CoDi time embedding dimension")
+    parser.add_argument("--activation", type=str, default="swish", choices=("elu", "relu", "lrelu", "swish", "tanh", "softplus"), help="CoDi MLP activation")
+
     parser.add_argument("--mask_ratio", type=float, default=0.3, help="Mask ratio for COSMIC masked autoencoder")
     parser.add_argument("--cosmic_hidden_dim", type=int, default=256, help="Hidden size for COSMIC modules")
     parser.add_argument("--cosmic_depth", type=int, default=4, help="Depth for COSMIC masked autoencoder")

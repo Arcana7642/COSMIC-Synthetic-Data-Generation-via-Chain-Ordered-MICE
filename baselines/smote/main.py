@@ -10,6 +10,7 @@ import argparse
 import warnings
 
 from baselines.tabsyn.latent_utils import recover_data
+from baselines.common import ensure_parent
 from utils_train import concat_y_to_X
 
 warnings.filterwarnings("ignore")
@@ -263,7 +264,7 @@ def main(args):
         idx_name_mapping = {int(key): value for key, value in idx_name_mapping.items()}
 
         syn_df.rename(columns = idx_name_mapping, inplace=True)
-        save_path = f'synthetic/{dataname}/smote.csv'
+        save_path = ensure_parent(args.save_path or f'synthetic/{dataname}/smote.csv')
         syn_df.to_csv(save_path, index = False)
 
     elif task_type == 'regression':
@@ -311,7 +312,7 @@ def main(args):
         idx_name_mapping = {int(key): value for key, value in idx_name_mapping.items()}
 
         syn_df.rename(columns = idx_name_mapping, inplace=True)
-        save_path = f'synthetic/{dataname}/smote.csv'
+        save_path = ensure_parent(args.save_path or f'synthetic/{dataname}/smote.csv')
         syn_df.to_csv(save_path, index = False)
 
     print('Saving sampled data to {}'.format(save_path))

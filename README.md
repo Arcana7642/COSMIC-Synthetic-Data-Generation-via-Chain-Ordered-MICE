@@ -1,6 +1,3 @@
-# COSMIC-Synthetic-Data-Generation-via-Chain-Ordered-MICE
-AAAI paper
-=======
 # COSMIC
 
 AAAI submission codebase scaffold for tabular synthesis experiments.
@@ -51,9 +48,9 @@ The following methods are treated as baselines:
 - `TabDDPM`
 - `TabSyn`
 
-`CTGAN` and `TVAE` run directly inside this repository.
+All baselines run inside this repository through the same CLI.
 
-`SMOTE`, `STaSy`, `CoDi`, `TabDDPM`, `TabSyn`, and `VAE` pretraining code were copied from `tabsyn-main` and wired to the same CLI.
+`SMOTE`, `STaSy`, `CoDi`, `TabDDPM`, `TabSyn`, and `VAE` pretraining code were copied from `tabsyn-main` and adapted to use this repository's package imports, dataset paths, checkpoints, and CUDA/CPU device selection.
 
 ## RTX 5080 environment
 

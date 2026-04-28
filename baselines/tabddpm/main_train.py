@@ -10,7 +10,7 @@ def main(args):
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     dataname = args.dataname
-    device = f'cuda:{args.gpu}'
+    device = args.device
 
     config_path = f'{curr_dir}/configs/{dataname}.toml'
     model_save_path = f'{curr_dir}/ckpt/{dataname}'

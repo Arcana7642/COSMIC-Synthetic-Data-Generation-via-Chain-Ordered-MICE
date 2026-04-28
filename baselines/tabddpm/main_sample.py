@@ -7,7 +7,7 @@ import src
 
 def main(args):
     dataname = args.dataname
-    device = f'cuda:{args.gpu}'
+    device = args.device
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = f'{curr_dir}/configs/{dataname}.toml'

@@ -21,7 +21,7 @@ from utils_train import preprocess
 
 
 def main(args):
-    device = torch.device("cuda:{}".format(args.gpu) if torch.cuda.is_available() else "cpu")
+    device = torch.device(args.device)
     dataname = args.dataname
 
     dataset_dir = f'data/{dataname}'

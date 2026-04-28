@@ -66,7 +66,7 @@ def recover_data(syn_num, syn_cat, info):
 
 def main(args):
 
-    args.device = torch.device("cuda:{}".format(args.gpu) if torch.cuda.is_available() else "cpu")
+    args.device = torch.device(args.device)
     device = args.device
     
     dataname = args.dataname    
