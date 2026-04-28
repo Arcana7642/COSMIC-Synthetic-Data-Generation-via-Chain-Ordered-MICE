@@ -48,9 +48,7 @@ The following methods are treated as baselines:
 - `TabDDPM`
 - `TabSyn`
 
-All baselines run inside this repository through the same CLI.
-
-`SMOTE`, `STaSy`, `CoDi`, `TabDDPM`, `TabSyn`, and `VAE` pretraining code were copied from `tabsyn-main` and adapted to use this repository's package imports, dataset paths, checkpoints, and CUDA/CPU device selection.
+All baselines run inside this repository through the same CLI, dataset paths, checkpoints, and CUDA/CPU device selection.
 
 ## RTX 5080 environment
 
@@ -75,9 +73,47 @@ Quick verification:
 python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'no-gpu')"
 ```
 
+## Docker
+
+Build the image:
+
+```bash
+docker build -t cosmic-cu128 .
+```
+
+Run a quick CUDA check:
+
+```bash
+docker run --rm --gpus all -it cosmic-cu128 python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'no-gpu')"
+```
+
+Run commands with the repository mounted so datasets, checkpoints, and synthetic outputs stay on the host:
+
+```bash
+docker run --rm --gpus all -it -v "%cd%:/workspace" cosmic-cu128 python download_dataset.py --dataname adult
+docker run --rm --gpus all -it -v "%cd%:/workspace" cosmic-cu128 python process_dataset.py --dataname adult
+docker run --rm --gpus all -it -v "%cd%:/workspace" cosmic-cu128 python main.py --dataname adult --method ctgan --mode train --epochs 300
+docker run --rm --gpus all -it -v "%cd%:/workspace" cosmic-cu128 python main.py --dataname adult --method ctgan --mode sample
+```
+
+For PowerShell, use `${PWD}` instead of `%cd%`:
+
+```powershell
+docker run --rm --gpus all -it -v "${PWD}:/workspace" cosmic-cu128 python download_dataset.py --dataname adult
+docker run --rm --gpus all -it -v "${PWD}:/workspace" cosmic-cu128 python process_dataset.py --dataname adult
+docker run --rm --gpus all -it -v "${PWD}:/workspace" cosmic-cu128 python main.py --dataname adult --method tabsyn --mode train
+```
+
+CPU-only runs can omit `--gpus all` and set `--gpu -1`:
+
+```bash
+docker run --rm -it -v "%cd%:/workspace" cosmic-cu128 python main.py --dataname adult --method smote --mode train --gpu -1
+```
+
 ## Dataset preprocessing
 
 The baseline pipeline expects the same processed dataset layout as TabSyn.
+Download the raw dataset first, then run preprocessing.
 
 Included utilities:
 
@@ -141,8 +177,11 @@ python main.py --dataname adult --method tabddpm --mode sample --ddim --steps 50
 python main.py --dataname adult --method tabsyn --mode sample
 ```
 
-Preprocess a dataset:
+Download and preprocess a dataset:
 
 ```bash
+python download_dataset.py --dataname adult
 python process_dataset.py --dataname adult
 ```
+
+Omit `--dataname` to download or preprocess every supported dataset.

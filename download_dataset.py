@@ -1,4 +1,5 @@
 import os
+import argparse
 import numpy
 import pandas as pd
 from urllib import request
@@ -40,6 +41,13 @@ def download_from_uci(name):
         print('Aready downloaded.')
 
 if __name__ == '__main__':
-    for name in NAME_URL_DICT_UCI.keys():
-        download_from_uci(name)
+    parser = argparse.ArgumentParser(description='Download supported UCI datasets')
+    parser.add_argument('--dataname', type=str, default=None, choices=NAME_URL_DICT_UCI.keys(), help='Dataset name to download. If omitted, all supported datasets are downloaded.')
+    args = parser.parse_args()
+
+    if args.dataname:
+        download_from_uci(args.dataname)
+    else:
+        for name in NAME_URL_DICT_UCI.keys():
+            download_from_uci(name)
     
