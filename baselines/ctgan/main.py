@@ -22,16 +22,21 @@ def _parse_dims(raw_dims: str) -> tuple[int, ...]:
 def main(args):
     CTGAN = _load_ctgan_class()
     bundle = load_dataset_bundle(args.dataname)
+    enable_gpu = torch.cuda.is_available() and args.gpu >= 0
 
-    model = CTGAN(
+    model_kwargs = dict(
         embedding_dim=args.embedding_dim,
         generator_dim=_parse_dims(args.generator_dim),
         discriminator_dim=_parse_dims(args.discriminator_dim),
         batch_size=args.batch_size,
         epochs=args.epochs,
         verbose=True,
-        cuda=torch.cuda.is_available() and args.gpu >= 0,
     )
+    try:
+        model = CTGAN(**model_kwargs, enable_gpu=enable_gpu)
+    except TypeError:
+        model = CTGAN(**model_kwargs, cuda=enable_gpu)
+
     model.fit(bundle.frame, discrete_columns=bundle.discrete_columns)
 
     artifact_dir = get_artifact_dir(args.dataname, "ctgan")

@@ -22,8 +22,9 @@ def _parse_dims(raw_dims: str) -> tuple[int, ...]:
 def main(args):
     TVAE = _load_tvae_class()
     bundle = load_dataset_bundle(args.dataname)
+    enable_gpu = torch.cuda.is_available() and args.gpu >= 0
 
-    model = TVAE(
+    model_kwargs = dict(
         embedding_dim=args.embedding_dim,
         compress_dims=_parse_dims(args.compress_dims),
         decompress_dims=_parse_dims(args.decompress_dims),
@@ -31,8 +32,12 @@ def main(args):
         epochs=args.epochs,
         l2scale=args.l2scale,
         loss_factor=args.loss_factor,
-        cuda=torch.cuda.is_available() and args.gpu >= 0,
     )
+    try:
+        model = TVAE(**model_kwargs, enable_gpu=enable_gpu)
+    except TypeError:
+        model = TVAE(**model_kwargs, cuda=enable_gpu)
+
     model.fit(bundle.frame, discrete_columns=bundle.discrete_columns)
 
     artifact_dir = get_artifact_dir(args.dataname, "tvae")

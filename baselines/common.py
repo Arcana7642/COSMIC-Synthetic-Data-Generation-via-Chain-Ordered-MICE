@@ -20,7 +20,10 @@ class DatasetBundle:
     @property
     def discrete_columns(self) -> list[str]:
         idx_to_name = self.idx_to_name
-        return [idx_to_name[idx] for idx in self.info.get("cat_col_idx", [])]
+        discrete_idx = list(self.info.get("cat_col_idx", []))
+        if self.info.get("task_type") != "regression":
+            discrete_idx.extend(self.info.get("target_col_idx", []))
+        return [idx_to_name[idx] for idx in discrete_idx]
 
     @property
     def idx_to_name(self) -> dict[int, str]:
@@ -63,7 +66,18 @@ def load_dataset_bundle(dataname: str) -> DatasetBundle:
     if not csv_path.exists():
         raise FileNotFoundError(f"Could not find raw dataset CSV at {csv_path}")
 
-    frame = pd.read_csv(csv_path)
+    file_type = info.get("file_type", "csv")
+    if file_type == "xls":
+        frame = pd.read_excel(csv_path, sheet_name="Data", header=1)
+        if "ID" in frame.columns:
+            frame = frame.drop("ID", axis=1)
+    else:
+        frame = pd.read_csv(csv_path, header=info.get("header", "infer"))
+
+    column_names = info.get("column_names")
+    if column_names and len(column_names) == len(frame.columns):
+        frame.columns = column_names
+
     return DatasetBundle(name=dataname, info=info, frame=frame, data_dir=data_dir)
 
 
