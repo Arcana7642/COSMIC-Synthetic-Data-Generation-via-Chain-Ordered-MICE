@@ -14,7 +14,8 @@ def main(args):
     artifact_path = Path(get_artifact_dir(args.dataname, "tvae")) / "model.pkl"
     if not artifact_path.exists():
         raise FileNotFoundError(
-            f"TVAE checkpoint not found at {artifact_path}. Run train mode first."
+            f"TVAE checkpoint not found at {artifact_path}. "
+            f"Run: python main.py --dataname {args.dataname} --method tvae --mode train --epochs {args.epochs}"
         )
 
     model = load_pickle(artifact_path)

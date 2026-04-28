@@ -14,7 +14,8 @@ def main(args):
     artifact_path = Path(get_artifact_dir(args.dataname, "ctgan")) / "model.pkl"
     if not artifact_path.exists():
         raise FileNotFoundError(
-            f"CTGAN checkpoint not found at {artifact_path}. Run train mode first."
+            f"CTGAN checkpoint not found at {artifact_path}. "
+            f"Run: python main.py --dataname {args.dataname} --method ctgan --mode train --epochs {args.epochs}"
         )
 
     model = load_pickle(artifact_path)

@@ -176,6 +176,8 @@ python main.py --dataname adult --method tabsyn --mode train
 
 Sample all baselines with generation support:
 
+Run each `sample` command only after the matching `train` command has created its checkpoint.
+
 ```bash
 python main.py --dataname adult --method smote --mode sample
 python main.py --dataname adult --method ctgan --mode sample
